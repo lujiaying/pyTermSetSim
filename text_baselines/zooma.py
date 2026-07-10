@@ -1,6 +1,16 @@
-from typing import List
-import requests
+from typing import List, Iterator, Tuple, TypeVar
+import os
 import json
+import time
+
+import requests
+
+T = TypeVar('T')
+def batched(lst: List[T], n: int) -> Iterator[Tuple[T, ...]]:
+    """quick implementation from py3.12 batched"""
+    for i in range(0, len(lst), n):
+        yield tuple(lst[i:i + n])
+
 
 def do_map_request(
     input_names: List[str],
@@ -50,7 +60,50 @@ def parse_result(results: dict) -> List[str]:
     return parsed_results
 
 
+def gen_results_stage2(
+    data_dir: str,
+    out_dir: str,
+):
+    """
+    Use pipeline stage 2 data as input
+    """
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+    # read json files from data_dir
+    for file_name in os.listdir(data_dir):
+        if file_name.endswith(".json"):
+            # ad-hoc skip one json file
+            if file_name == "paper_label_data_annotation_mapping.summary.json":
+                continue
+            file_path = os.path.join(data_dir, file_name)
+            print(f"Processing file: {file_path}")
+            with open(file_path, "r") as f:
+                data = json.load(f)
+            input_names = [item['original_label'] for item in data['items']]
+            overall_results = []
+            overall_parsed_results = []
+            for batch_names in batched(input_names, 10):
+                results = do_map_request(batch_names)
+                parsed_results = parse_result(results)
+                overall_results.extend(results['mappings'])
+                overall_parsed_results.extend(parsed_results)
+                print(f"Processed batch: {batch_names}, parsed results: {parsed_results}...")
+                time.sleep(3)  # sleep for 3 seconds to avoid rate limit
+            out_items = [{'original_label': original, 'mapped_label': mapped} for original, mapped in overall_parsed_results]
+            output = {
+                'title': data['title'],
+                'rule_version': data['rule_version'],
+                'items': out_items,
+                'zooma_raw_response': overall_results,
+            }
+            out_file_path = os.path.join(out_dir, file_name)
+            with open(out_file_path, "w") as f:
+                json.dump(output, f, indent=2)
+
+
 if __name__ == "__main__":
+    # test case 1
+    """
     input_names = [
         "T_cells_c6_IFIT1",
         "T_cells_c0_CD4+_CCR7",
@@ -69,3 +122,6 @@ if __name__ == "__main__":
     print(json.dumps(results))
     parsed_results = parse_result(results)
     print(json.dumps(parsed_results, indent=2))
+    """
+
+    gen_results_stage2(data_dir="./stage2/", out_dir="./stage2_zooma_results/")
