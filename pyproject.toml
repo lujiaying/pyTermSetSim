@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "pronto>=2.7.3",
     "scipy>=1.17.1",
     "sentence-transformers>=5.5.1",
 ]
