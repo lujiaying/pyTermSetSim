@@ -24,7 +24,8 @@ def do_map_request(
     request_body = {
         "properties": properties,
         "model": "",
-        "targetOntologies": ["cl"],
+        #"targetOntologies": ["cl"],
+        "targetOntologies": ["cl", "clo", "hcao", "pcl"],
         "includeOtherOntologies": False,
         "filter": {
             "required": ["atlas", "gwas"],
@@ -88,7 +89,7 @@ def gen_results_stage2(
                 overall_results.extend(results['mappings'])
                 overall_parsed_results.extend(parsed_results)
                 print(f"Processed batch: {batch_names}, parsed results: {parsed_results}...")
-                time.sleep(3)  # sleep for 3 seconds to avoid rate limit
+                time.sleep(1)  # sleep for 1 second to avoid rate limit
             out_items = [{'original_label': original, 'mapped_label': mapped} for original, mapped in overall_parsed_results]
             output = {
                 'title': data['title'],
@@ -124,4 +125,4 @@ if __name__ == "__main__":
     print(json.dumps(parsed_results, indent=2))
     """
 
-    gen_results_stage2(data_dir="./stage2/", out_dir="./stage2_zooma_results/")
+    gen_results_stage2(data_dir="./stage2/", out_dir="./stage2_zooma_4onto_results/")

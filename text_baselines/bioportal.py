@@ -17,7 +17,7 @@ def do_search(
     BioPortal Term Search
     """
     cell_name = urllib.parse.quote(cell_name, safe='')
-    url = f"https://data.bioontology.org/search?apikey={api_key}&q={cell_name}&pagesize={top_k}"
+    url = f"https://data.bioontology.org/search?apikey={api_key}&q={cell_name}&pagesize={top_k}&ontologies=BRCT%2CMCBCC%2CCLO%2CMCCL%2CCL%2CPATCT"
     response = requests.get(url)
     if response.status_code != 200:
         raise Exception(f"Request failed with status code {response.status_code}: {response.text}")
@@ -86,4 +86,4 @@ if __name__ == "__main__":
     print(f'{cell_name} -> {mapped_name}')
     """
 
-    gen_results_stage2(data_dir="./stage2/", out_dir="./stage2_bioportal_results/")
+    gen_results_stage2(data_dir="./stage2/", out_dir="./stage2_bioportal_6onto_results/")
