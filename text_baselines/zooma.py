@@ -125,4 +125,6 @@ if __name__ == "__main__":
     print(json.dumps(parsed_results, indent=2))
     """
 
-    gen_results_stage2(data_dir="./stage2/", out_dir="./stage2_zooma_4onto_results/")
+    #gen_results_stage2(data_dir="./stage2/", out_dir="./stage2_zooma_4onto_results/")
+    #gen_results_stage2(data_dir="./all_journals_gpt55_thinking_20260711/stage2/", out_dir="./all_journals_gpt55_thinking_20260711_stage2_zooma_4onto_results/")
+    gen_results_stage2(data_dir="./all_journals_deepseek_v4_pro_thinking_20260711/stage2/", out_dir="./all_journals_deepseek_v4_pro_thinking_20260711_stage2_zooma_4onto_results/")

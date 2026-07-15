@@ -30,8 +30,11 @@ def parse_search_results(results: dict) -> str:
     Parses the results from the BioPortal API response.
     We use the top confident mapping for each input name.
     """
-    top1 = results['collection'][0]
-    mapped_name = top1['prefLabel']
+    if len(results['collection']) > 0:
+        top1 = results['collection'][0]
+        mapped_name = top1['prefLabel']
+    else:
+        mapped_name = None
     return mapped_name
 
 
@@ -63,7 +66,7 @@ def gen_results_stage2(
                 overall_results.append(results)
                 overall_parsed_results.append((cell_name, mapped_name))
                 print(f"Processed cell name: {cell_name}, mapped name: {mapped_name}...")
-                time.sleep(0.5)  # sleep to avoid rate limit
+                time.sleep(1)  # sleep to avoid rate limit
             out_items = [{'original_label': original, 'mapped_label': mapped} for original, mapped in overall_parsed_results]
             output = {
                 'title': data['title'],
@@ -86,4 +89,6 @@ if __name__ == "__main__":
     print(f'{cell_name} -> {mapped_name}')
     """
 
-    gen_results_stage2(data_dir="./stage2/", out_dir="./stage2_bioportal_6onto_results/")
+    #gen_results_stage2(data_dir="./stage2/", out_dir="./stage2_bioportal_6onto_results/")
+    #gen_results_stage2(data_dir="./all_journals_gpt55_thinking_20260711/stage2/", out_dir="./all_journals_gpt55_thinking_20260711_stage2_bioportal_6onto_results/")
+    gen_results_stage2(data_dir="./all_journals_deepseek_v4_pro_thinking_20260711/stage2/", out_dir="./all_journals_deepseek_v4_pro_thinking_20260711_stage2_bioportal_6onto_results/")
